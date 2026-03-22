@@ -1,0 +1,14 @@
+//import org.gradle.api.initialization.resolve.RepositoriesMode
+
+rootProject.name = "wellness-service"
+
+//pluginManagement {
+//    repositories {
+//        mavenCentral()
+//        gradlePluginPortal()
+//    }
+//}
+//dependencyResolutionManagement {
+//    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+//    repositories { mavenCentral() }
+//}

@@ -1,0 +1,10 @@
+﻿{
+  "type": "record",
+  "name": "GoalCompletedEvent",
+  "namespace": "ca.gbc.comp3095.goaltrackingservice.event",
+  "fields": [
+    { "name":  "title", "type":  "string"},
+    { "name":  "description", "type":  "string"},
+    { "name":  "category", "type":  "string"}
+  ]
+}

@@ -1,0 +1,80 @@
+﻿# --------------------------------------------------
+# Commands to run this compose file:
+#     - docker-compose -p comp3095-assignment-integrated -f docker-compose.yml up -d
+#     This command will start the containers in detached mode (-d) without rebuilding the images (if they already exist)
+#
+#     - docker-compose -p comp3095-assignment-integrated -f docker-compose.yml up -d --build
+#     This command force the rebuild of images, even if the images already exist
+# ------------------------------------------------
+
+services:
+
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "9000:9000"
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_APPLICATION_JSON={"logging":{"level":{"root":"INFO","ca.gbc.apigateway":"DEBUG"}}}:
+    container_name: api-gateway
+    networks:
+      - comp3095_assignment
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    ports:
+      - "8080:8080"
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=postgres-keycloak
+      - KC_DB_URL_PORT=5432
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_USERNAME=admin
+      - KC_DB_PASSWORD=admin
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+
+      - KC_HOSTNAME=keycloak
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+    command:
+      - start-dev
+    container_name: keycloak
+    depends_on:
+      - postgres-keycloak
+      - wellness-service
+      - event-service
+      - goal-tracking-service
+    networks:
+      - comp3095_assignment
+
+
+  postgres-keycloak:
+    image: postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - keycloak-data-test:/var/lib/postgresql/data
+#      - ./docker/integrated/postgres/data/keycloak:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    container_name: postgres-keycloak
+    networks:
+      - comp3095_assignment
+
+
+
+
+
+volumes:
+  keycloak-data-test:
+
+networks:
+  comp3095_assignment:
+    driver: bridge
